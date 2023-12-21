@@ -38,30 +38,39 @@ const AddCv = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formDataToSend = {
-      username: localStorage.getItem("username"),
-      resume_data: formData,
-    };
 
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BASE_URL}/add-cv-form`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formDataToSend),
+    if (formData.name) {
+      const isConfirmed = window.confirm("Are you sure want to submit?");
+
+      if (isConfirmed) {
+        const formDataToSend = {
+          username: localStorage.getItem("username"),
+          resume_data: formData,
+        };
+
+        try {
+          const response = await fetch(
+            `${process.env.REACT_APP_BASE_URL}/add-cv-form`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formDataToSend),
+            }
+          );
+
+          if (response.ok) {
+            navigate("/");
+          } else {
+            console.error("Failed to submit form data.");
+          }
+        } catch (error) {
+          console.error("Error submitting form data:", error);
         }
-      );
-
-      if (response.ok) {
-        navigate("/");
-      } else {
-        console.error("Failed to submit form data.");
       }
-    } catch (error) {
-      console.error("Error submitting form data:", error);
+    } else {
+      alert("Name is mandatory!");
     }
   };
 

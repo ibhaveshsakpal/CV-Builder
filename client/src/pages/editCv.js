@@ -43,32 +43,41 @@ const EditCv = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formDataToSend = {
-      username: localStorage.getItem("username"),
-      resume_data: formData,
-    };
 
-    try {
-      const queryParam = window.location.pathname.split("/")[2];
-      const response = await fetch(
-        `${process.env.REACT_APP_BASE_URL}/editcv/${queryParam}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formDataToSend),
+    if (formData.name) {
+      const isConfirmed = window.confirm("Are you sure want to submit?");
+
+      if (isConfirmed) {
+        const formDataToSend = {
+          username: localStorage.getItem("username"),
+          resume_data: formData,
+        };
+
+        try {
+          const queryParam = window.location.pathname.split("/")[2];
+          const response = await fetch(
+            `${process.env.REACT_APP_BASE_URL}/editcv/${queryParam}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formDataToSend),
+            }
+          );
+
+          if (response.ok) {
+            const queryParamsTemplate = window.location.pathname.split("/")[3];
+            navigate(`/preview/${queryParam}/${queryParamsTemplate}`);
+          } else {
+            console.error("Failed to submit form data.");
+          }
+        } catch (error) {
+          console.error("Error updating form data:", error);
         }
-      );
-
-      if (response.ok) {
-        const queryParamsTemplate = window.location.pathname.split("/")[3];
-        navigate(`/preview/${queryParam}/${queryParamsTemplate}`);
-      } else {
-        console.error("Failed to submit form data.");
       }
-    } catch (error) {
-      console.error("Error updating form data:", error);
+    } else {
+      alert("Name is mandatory!");
     }
   };
 
